@@ -51,7 +51,7 @@ func (c completedConfig) New(stopCh <-chan struct{}) (*Server, error) {
 	_ = copier.Copy(&dbOptions, c.MySQLOptions)
 
 	// Initialize Kratos application with the provided configurations.
-	app, cleanup, err := wireApp(appInfo, conf, &dbOptions)
+	app, cleanup, err := wireApp(appInfo, conf, &dbOptions, c.JWTOptions)
 	if err != nil {
 		return nil, err
 	}

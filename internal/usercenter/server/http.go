@@ -14,6 +14,7 @@ import (
 
 func NewWhiteListMatcher() selector.MatchFunc {
 	whitelist := make(map[string]struct{})
+	whitelist[v1.OperationUserCenterLogin] = struct{}{}
 	return func(ctx context.Context, operation string) bool {
 		if _, ok := whitelist[operation]; ok {
 			return false

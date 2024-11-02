@@ -17,12 +17,14 @@ import (
 	"github.com/dawn303/cc/internal/usercenter/service"
 	"github.com/dawn303/cc/internal/usercenter/store"
 	"github.com/dawn303/cc/pkg/db"
+	"github.com/dawn303/cc/pkg/options"
 )
 
 func wireApp(
 	bootstrap.AppInfo,
 	*server.Config,
 	*db.MySQLOptions,
+	*options.JWTOptions,
 ) (*kratos.App, func(), error) {
 	wire.Build(
 		bootstrap.ProviderSet,
@@ -31,6 +33,7 @@ func wireApp(
 		db.ProviderSet,
 		biz.ProviderSet,
 		service.ProviderSet,
+		NewAuthenticator,
 	)
 
 	return nil, nil, nil

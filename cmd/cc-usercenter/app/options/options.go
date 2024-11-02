@@ -19,6 +19,7 @@ type Options struct {
 	TLSOptions   *genericoptions.TLSOptions   `json:"tls" mapstructure:"tls"`
 	MySQLOptions *genericoptions.MySQLOptions `json:"mysql" mapstructure:"mysql"`
 	RedisOptions *genericoptions.RedisOptions `json:"redis" mapstructure:"redis"`
+	JWTOptions   *genericoptions.JWTOptions   `json:"jwt" mapstructure:"jwt"`
 	Log          *log.Options                 `json:"log" mapstructure:"log"`
 }
 
@@ -30,6 +31,7 @@ func NewOptions() *Options {
 		TLSOptions:   genericoptions.NewTLSOptions(),
 		MySQLOptions: genericoptions.NewMySQLOptions(),
 		RedisOptions: genericoptions.NewRedisOptions(),
+		JWTOptions:   genericoptions.NewJWTOptions(),
 		Log:          log.NewOptions(),
 	}
 
@@ -42,6 +44,7 @@ func (o *Options) Flags() (fss cliflag.NamedFlagSets) {
 	o.TLSOptions.AddFlags(fss.FlagSet("tls"))
 	o.MySQLOptions.AddFlags(fss.FlagSet("mysql"))
 	o.RedisOptions.AddFlags(fss.FlagSet("redis"))
+	o.JWTOptions.AddFlags(fss.FlagSet("jwt"))
 	o.Log.AddFlags(fss.FlagSet("log"))
 
 	// Note: the weird ""+ in below lines seems to be the only way to get gofmt to
@@ -66,6 +69,7 @@ func (o *Options) Validate() error {
 	errs = append(errs, o.TLSOptions.Validate()...)
 	errs = append(errs, o.MySQLOptions.Validate()...)
 	errs = append(errs, o.RedisOptions.Validate()...)
+	errs = append(errs, o.JWTOptions.Validate()...)
 	errs = append(errs, o.Log.Validate()...)
 
 	return utilerrors.NewAggregate(errs)
@@ -76,6 +80,7 @@ func (o *Options) ApplyTo(c *usercenter.Config) error {
 	c.TLSOptions = o.TLSOptions
 	c.MySQLOptions = o.MySQLOptions
 	c.RedisOptions = o.RedisOptions
+	c.JWTOptions = o.JWTOptions
 	return nil
 }
 

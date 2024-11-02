@@ -13,12 +13,13 @@ import (
 	"github.com/dawn303/cc/internal/usercenter/service"
 	"github.com/dawn303/cc/internal/usercenter/store"
 	"github.com/dawn303/cc/pkg/db"
+	"github.com/dawn303/cc/pkg/options"
 	"github.com/go-kratos/kratos/v2"
 )
 
 // Injectors from wire.go:
 
-func wireApp(appInfo bootstrap.AppInfo, config *server.Config, mySQLOptions *db.MySQLOptions) (*kratos.App, func(), error) {
+func wireApp(appInfo bootstrap.AppInfo, config *server.Config, mySQLOptions *db.MySQLOptions, jwtOptions *options.JWTOptions) (*kratos.App, func(), error) {
 	logger := bootstrap.NewLogger(appInfo)
 	appConfig := bootstrap.AppConfig{
 		Info:   appInfo,
@@ -29,12 +30,17 @@ func wireApp(appInfo bootstrap.AppInfo, config *server.Config, mySQLOptions *db.
 		return nil, nil, err
 	}
 	datastore := store.NewStore(gormDB)
-	bizBiz := biz.NewBiz(datastore)
+	authenticator, cleanup, err := NewAuthenticator(jwtOptions)
+	if err != nil {
+		return nil, nil, err
+	}
+	bizBiz := biz.NewBiz(datastore, authenticator)
 	userCenterService := service.NewUserCenterService(bizBiz)
-	v := server.NewMiddlewares()
+	v := server.NewMiddlewares(logger, authenticator)
 	httpServer := server.NewHTTPServer(config, userCenterService, v)
 	v2 := server.NewServers(httpServer)
 	app := bootstrap.NewApp(appConfig, v2...)
 	return app, func() {
+		cleanup()
 	}, nil
 }

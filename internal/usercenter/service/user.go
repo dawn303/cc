@@ -10,7 +10,7 @@ import (
 
 func (s *UserCenterService) Login(ctx context.Context, rq *v1.LoginRequest) (*v1.LoginReply, error) {
 	log.C(ctx).Infow("Login function called", "username", rq.Username)
-	return nil, nil
+	return s.biz.Auths().Login(ctx, rq)
 }
 
 func (s *UserCenterService) CreateUser(ctx context.Context, rq *v1.CreateUserRequest) (*v1.UserReply, error) {

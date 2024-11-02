@@ -21,8 +21,7 @@ type JWTOptions struct {
 // NewJWTOptions creates a JWTOptions object with default parameters.
 func NewJWTOptions() *JWTOptions {
 	return &JWTOptions{
-		// Realm:         "",
-		Key:           "cc(#)666",
+		Key:           "cc(!#)666",
 		Expired:       2 * time.Hour,
 		MaxRefresh:    2 * time.Hour,
 		SigningMethod: "HS512",
