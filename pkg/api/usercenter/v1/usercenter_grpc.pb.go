@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,7 +20,10 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	UserCenter_Login_FullMethodName = "/usercenter.v1.UserCenter/Login"
+	UserCenter_Login_FullMethodName      = "/usercenter.v1.UserCenter/Login"
+	UserCenter_CreateUser_FullMethodName = "/usercenter.v1.UserCenter/CreateUser"
+	UserCenter_ListUser_FullMethodName   = "/usercenter.v1.UserCenter/ListUser"
+	UserCenter_DeleteUser_FullMethodName = "/usercenter.v1.UserCenter/DeleteUser"
 )
 
 // UserCenterClient is the client API for UserCenter service.
@@ -27,6 +31,12 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserCenterClient interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginReply, error)
+	// CreateUser
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserReply, error)
+	// ListUser
+	ListUser(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserResponse, error)
+	// DeleteUser
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type userCenterClient struct {
@@ -47,11 +57,47 @@ func (c *userCenterClient) Login(ctx context.Context, in *LoginRequest, opts ...
 	return out, nil
 }
 
+func (c *userCenterClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*UserReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserReply)
+	err := c.cc.Invoke(ctx, UserCenter_CreateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userCenterClient) ListUser(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserResponse)
+	err := c.cc.Invoke(ctx, UserCenter_ListUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userCenterClient) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserCenter_DeleteUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserCenterServer is the server API for UserCenter service.
 // All implementations must embed UnimplementedUserCenterServer
 // for forward compatibility
 type UserCenterServer interface {
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
+	// CreateUser
+	CreateUser(context.Context, *CreateUserRequest) (*UserReply, error)
+	// ListUser
+	ListUser(context.Context, *ListUserRequest) (*ListUserResponse, error)
+	// DeleteUser
+	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserCenterServer()
 }
 
@@ -61,6 +107,15 @@ type UnimplementedUserCenterServer struct {
 
 func (UnimplementedUserCenterServer) Login(context.Context, *LoginRequest) (*LoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserCenterServer) CreateUser(context.Context, *CreateUserRequest) (*UserReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserCenterServer) ListUser(context.Context, *ListUserRequest) (*ListUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUser not implemented")
+}
+func (UnimplementedUserCenterServer) DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedUserCenterServer) mustEmbedUnimplementedUserCenterServer() {}
 
@@ -93,6 +148,60 @@ func _UserCenter_Login_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserCenter_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserCenterServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserCenter_CreateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserCenterServer).CreateUser(ctx, req.(*CreateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserCenter_ListUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserCenterServer).ListUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserCenter_ListUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserCenterServer).ListUser(ctx, req.(*ListUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserCenter_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserCenterServer).DeleteUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserCenter_DeleteUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserCenterServer).DeleteUser(ctx, req.(*DeleteUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserCenter_ServiceDesc is the grpc.ServiceDesc for UserCenter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -103,6 +212,18 @@ var UserCenter_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _UserCenter_Login_Handler,
+		},
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserCenter_CreateUser_Handler,
+		},
+		{
+			MethodName: "ListUser",
+			Handler:    _UserCenter_ListUser_Handler,
+		},
+		{
+			MethodName: "DeleteUser",
+			Handler:    _UserCenter_DeleteUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

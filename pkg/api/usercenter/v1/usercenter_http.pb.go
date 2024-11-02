@@ -10,6 +10,7 @@ import (
 	context "context"
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -19,15 +20,27 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationUserCenterCreateUser = "/usercenter.v1.UserCenter/CreateUser"
+const OperationUserCenterDeleteUser = "/usercenter.v1.UserCenter/DeleteUser"
+const OperationUserCenterListUser = "/usercenter.v1.UserCenter/ListUser"
 const OperationUserCenterLogin = "/usercenter.v1.UserCenter/Login"
 
 type UserCenterHTTPServer interface {
+	// CreateUser CreateUser
+	CreateUser(context.Context, *CreateUserRequest) (*UserReply, error)
+	// DeleteUser DeleteUser
+	DeleteUser(context.Context, *DeleteUserRequest) (*emptypb.Empty, error)
+	// ListUser ListUser
+	ListUser(context.Context, *ListUserRequest) (*ListUserResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginReply, error)
 }
 
 func RegisterUserCenterHTTPServer(s *http.Server, srv UserCenterHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/auth/login", _UserCenter_Login0_HTTP_Handler(srv))
+	r.POST("/v1/users", _UserCenter_CreateUser0_HTTP_Handler(srv))
+	r.GET("/v1/users", _UserCenter_ListUser0_HTTP_Handler(srv))
+	r.DELETE("/v1/users/{username}", _UserCenter_DeleteUser0_HTTP_Handler(srv))
 }
 
 func _UserCenter_Login0_HTTP_Handler(srv UserCenterHTTPServer) func(ctx http.Context) error {
@@ -52,7 +65,73 @@ func _UserCenter_Login0_HTTP_Handler(srv UserCenterHTTPServer) func(ctx http.Con
 	}
 }
 
+func _UserCenter_CreateUser0_HTTP_Handler(srv UserCenterHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in CreateUserRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserCenterCreateUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateUser(ctx, req.(*CreateUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*UserReply)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserCenter_ListUser0_HTTP_Handler(srv UserCenterHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ListUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserCenterListUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListUser(ctx, req.(*ListUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ListUserResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserCenter_DeleteUser0_HTTP_Handler(srv UserCenterHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in DeleteUserRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserCenterDeleteUser)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteUser(ctx, req.(*DeleteUserRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserCenterHTTPClient interface {
+	CreateUser(ctx context.Context, req *CreateUserRequest, opts ...http.CallOption) (rsp *UserReply, err error)
+	DeleteUser(ctx context.Context, req *DeleteUserRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	ListUser(ctx context.Context, req *ListUserRequest, opts ...http.CallOption) (rsp *ListUserResponse, err error)
 	Login(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginReply, err error)
 }
 
@@ -62,6 +141,45 @@ type UserCenterHTTPClientImpl struct {
 
 func NewUserCenterHTTPClient(client *http.Client) UserCenterHTTPClient {
 	return &UserCenterHTTPClientImpl{client}
+}
+
+func (c *UserCenterHTTPClientImpl) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...http.CallOption) (*UserReply, error) {
+	var out UserReply
+	pattern := "/v1/users"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserCenterCreateUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserCenterHTTPClientImpl) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/v1/users/{username}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserCenterDeleteUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserCenterHTTPClientImpl) ListUser(ctx context.Context, in *ListUserRequest, opts ...http.CallOption) (*ListUserResponse, error) {
+	var out ListUserResponse
+	pattern := "/v1/users"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationUserCenterListUser))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *UserCenterHTTPClientImpl) Login(ctx context.Context, in *LoginRequest, opts ...http.CallOption) (*LoginReply, error) {
